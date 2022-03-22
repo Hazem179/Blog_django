@@ -1,0 +1,37 @@
+{% load blog_tags %}
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+ <title>{% block title %}
+ {% endblock %}</title>
+ <link href="{% static "css/blog.css" %}" rel="stylesheet">
+</head>
+<body>
+ <div id="content">
+ {% block content %}
+ {% endblock %}
+ </div>
+ <div id="sidebar">
+ <h2>Souls games</h2>
+     <p>I've write {% total_posts %}</p>
+ <p>
+     <a href="{% url "blogapp:post_feed" %}">Subscribe feeds</a>
+ </p>
+ <p>This is my blog.</p>
+     <h3>Latest posts</h3>
+     {% show_latest_posts %}
+     <h3>Most active posts</h3>
+{% get_most_commented_posts as most_commeted_posts %}
+<ul>
+    {% for post in most_commeted_posts %}
+
+        <li>
+        <a href="{{ post.get_absolute_url  }}">{{ post.title }}</a>
+        </li>
+    {% endfor %}
+</ul>
+
+ </div>
+</body>
+</html>
