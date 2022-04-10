@@ -1,9 +1,9 @@
 from django.db import models
 from  django.utils import timezone
 from django.contrib.auth.models import User
+from django.utils.text import slugify
 from django.urls import reverse
 from taggit.managers import TaggableManager
-from django.db.models import Count
 
 # Create your models here.
 class PublishedManager(models.Manager):
@@ -25,6 +25,10 @@ class Post(models.Model):
     status = models.CharField(max_length=10,choices=STATUES_CHOICES,default='draft')
     published = PublishedManager()
     tags = TaggableManager()
+    def save(self,*args,**kwargs):
+        if not self.slug:
+            self.slug = slugify(self.title)
+        super().save(*args,**kwargs)
 
 
     class Meta:

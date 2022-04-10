@@ -1,19 +1,14 @@
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
-from django.shortcuts import render,get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.postgres.search import SearchVector,SearchQuery,SearchRank
-from .models import Post,Comment
-from .forms import EmailPostForm,CommentForm,SearchForm
-from django.views.generic import ListView
+from .models import Post
+from .forms import EmailPostForm,CommentForm,SearchForm,PostForm
 from django.core.mail import send_mail
 from taggit.models import Tag
 from django.db.models import Count
 # Create your views here.
 
-# class PostListView(ListView):
-#     queryset = Post.published.all()
-#     context_object_name = 'posts' # for query result
-#     paginate_by = 3
-#     template_name = 'post/list.html'
+
 def post_list(request,tag_slug=None):
     objects = Post.published.all()
     paginator = Paginator(objects,3)
@@ -96,3 +91,20 @@ def post_search(request):
             ).filter(search=query).order_by('-rank')
 
     return render(request,'post/search.html',{'form':form,'query':query,'results':results})
+
+
+
+def create_post(request):
+    if request.method =='POST':
+        post_form = PostForm(data=request.POST)
+        if post_form.is_valid():
+            cd = post_form.cleaned_data
+            new_post = post_form.save(commit=False)
+            new_post.save()
+            for tag in cd['tags']:
+                new_post.tags.add(tag)
+            return redirect('blogapp:post_list')
+    else:
+        post_form = PostForm()
+
+    return render(request,'post/create.html',{'post_form':post_form})

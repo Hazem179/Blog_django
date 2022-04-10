@@ -1,0 +1,15 @@
+{% extends 'blogapp/base.html' %}
+
+
+{% block title %}
+    Create
+{% endblock %}
+
+{% block content %}
+create post content
+    <form method="post">
+      {{ post_form.as_p }}
+      {% csrf_token %}
+      <p><input type="submit" value="Add post"></p>
+    </form>
+{% endblock %}
